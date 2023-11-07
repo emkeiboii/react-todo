@@ -46,7 +46,6 @@ function ToDoList() {
         onDeleteTask={handleDeleteTask}
         onToggleTask={handleToggleTask}
       />
-      <Filter tasks={tasks} />
       {tasks.length === 0 || <ClearAll onClearTasks={handleClearTasks} />}
     </div>
   );
@@ -87,9 +86,29 @@ function Form({ onAddTask }) {
 }
 
 function TasksList({ tasks, onDeleteTask, onToggleTask }) {
+  const [sortBy, setSortBy] = useState("all");
+
+  const taskNum = tasks.length;
+  const taskCompleted = tasks.filter((task) => task.completed).length;
+  const taskPercentage = Math.round((taskCompleted * 100) / taskNum);
+
+  let sortedTasks;
+
+  if (sortBy === "all") sortedTasks = tasks;
+
+  if (sortBy === "active")
+    sortedTasks = tasks
+      .slice()
+      .sort((a, b) => Number(!b.completed) - Number(!a.completed));
+
+  if (sortBy === "completed")
+    sortedTasks = tasks
+      .slice()
+      .sort((a, b) => Number(b.completed) - Number(a.completed));
+
   return (
     <div className="p-1 w-full">
-      {tasks.map((task) => (
+      {sortedTasks.map((task) => (
         <Task
           task={task}
           key={task.id}
@@ -97,6 +116,23 @@ function TasksList({ tasks, onDeleteTask, onToggleTask }) {
           onToggleTask={onToggleTask}
         />
       ))}
+      <div className="flex justify-between w-full relative bg-slate-100 p-1">
+        <p>
+          {taskNum === 0
+            ? "Add a new task"
+            : `${taskNum} items (%${taskPercentage} completed)`}
+        </p>
+        <label className="flex-1 text-right pr-1">filter:</label>
+        <select
+          className="bg-transparent"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <option value="all">all</option>
+          <option value="active">active</option>
+          <option value="completed">completed</option>
+        </select>
+      </div>
     </div>
   );
 }
@@ -114,7 +150,7 @@ function Task({ task, onDeleteTask, onToggleTask }) {
     </div>
   );
 }
-
+/*
 function Filter({ tasks }) {
   const taskNum = tasks.length;
   const taskCompleted = tasks.filter((task) => task.completed).length;
@@ -128,7 +164,7 @@ function Filter({ tasks }) {
           : `${taskNum} items (%${taskPercentage} completed)`}
       </p>
       <label className="flex-1 text-right pr-1">filter:</label>
-      <select name="" id="" className="bg-transparent">
+      <select className="bg-transparent">
         <option value="all">all</option>
         <option value="active">active</option>
         <option value="completed">completed</option>
@@ -136,6 +172,7 @@ function Filter({ tasks }) {
     </div>
   );
 }
+*/
 
 function ClearAll({ onClearTasks }) {
   return (
