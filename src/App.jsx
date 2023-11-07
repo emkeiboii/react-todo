@@ -23,11 +23,15 @@ function ToDoList() {
     setTasks([...tasks, task]);
   }
 
+  function handleDeleteTask(id) {
+    setTasks((tasks) => tasks.filter((task) => task.id !== id));
+  }
+
   return (
     <div className="border-2 border-gray-300 rounded-sm mx-auto my-7 w-96 flex justify-center items-center flex-col max-w-max pt-5 pb-3 px-3">
       <h1 className="text-4xl uppercase">to do list</h1>
       <Form onAddTask={handleAddTask} />
-      <TasksList tasks={tasks} />
+      <TasksList tasks={tasks} onDeleteTask={handleDeleteTask} />
       <Filter />
     </div>
   );
@@ -67,22 +71,22 @@ function Form({ onAddTask }) {
   );
 }
 
-function TasksList({ tasks }) {
+function TasksList({ tasks, onDeleteTask }) {
   return (
     <div className="p-1 w-full">
       {tasks.map((task) => (
-        <Task task={task} key={task.id} />
+        <Task task={task} key={task.id} onDeleteTask={onDeleteTask} />
       ))}
     </div>
   );
 }
 
-function Task({ task }) {
+function Task({ task, onDeleteTask }) {
   return (
     <div className="flex border-b border-gray-200 p-1 my-1 justify-between gap-3">
       <input type="checkbox"></input>
       <p className="flex-1 first-letter:uppercase">{task.description}</p>
-      <button className="text-red-600">X</button>
+      <button onClick={() => onDeleteTask(task.id)}>❌</button>
     </div>
   );
 }
